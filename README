@@ -1,0 +1,29 @@
+For running the code in lxplus the best option is to rely on the coffea singularity image. 
+First is to build the project and create a wheel that will be easily installed inside the image. following steps can be followed
+
+# lunch the singularity image
+singularity shell -B ${PWD}:/srv/ /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask:latest
+cd /srv/ 
+
+# build the project
+python setup.py build 
+
+# create wheel that will serve letter to run jobs on condor
+python setup.py bdist_wheel --universal
+
+# install the wheel  #Qawa-0.0.5-py2.py3-none-any.whl name can be changed
+python -m pip install  --upgrade --no-deps  --ignore-installed --no-cache-dir dist/Qawa-0.0.5-py2.py3-none-any.whl
+
+After these steps two options, run locally or using HTcondor
+1. Locally example:
+
+# running one of the files for ZZ2l2nu sample. 
+#  use the path directly from DAS
+python brewer-local.py --isMC=1 --era=2018 --infile=/store/mc/RunIISummer20UL18NanoAODv9/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/691B674F-83CA-0140-9754-14863CD3B950.root
+
+2. Running on HTcondor 
+This option is for running entire datasets. For that  txt file with the dataset to run. 
+
+submit the jobs using the following command:
+python brewer-htcondor.py -i data/datasetUL2018-mc.txt -t cairo --isMC=1 --era=2018
+
